@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Yönetimi ve Kubernetes | Furkan Yılmaz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/common.css">
+</head>
+<body class="antialiased">
+
+<header class="detail-topbar">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="index.html#devops" class="back-link">
+            <span aria-hidden="true">←</span> Ana Sayfaya Dön
+        </a>
+        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Sistem Yönetimi ve Kubernetes</span>
+    </div>
+</header>
+
+<div class="max-w-6xl mx-auto px-4 py-12">
+    <header class="mb-16 border-b pb-8">
+        <div class="flex flex-col gap-6">
+            <div>
+                <span class="font-bold tracking-widest uppercase text-sm text-cyan-600">Staj Projesi</span>
+                <p class="text-sm text-slate-500 mt-1">Sistem altyapı ve kurulum çalışması</p>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mt-2">Sistem Yönetimi ve Kubernetes</h1>
+                <p class="text-slate-500 mt-4 max-w-2xl text-lg">
+                    Fiziksel sunucularda (bare-metal) donanım hazırlığından başlanarak AlmaLinux 8/9 üzerinde kubeadm ile çok düğümlü cluster kurulumu.
+                    Kubernetes API trafiği, k8s-lb-01 (192.168.50.10) üzerindeki HAProxy ile TCP 6443 portundan
+                    3 control-plane düğümüne dağıtılır.
+                </p>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                    <span class="block text-2xl font-bold" style="color: var(--brand-accent);">3</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold">Control Plane</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                    <span class="block text-2xl font-bold text-emerald-500">2</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold">Worker Node</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                    <span class="block text-2xl font-bold text-slate-700">1</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold">Management</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                    <span class="block text-2xl font-bold text-cyan-600">1</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold">HAProxy LB</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+        <div class="lg:col-span-2 space-y-6">
+            <h3 class="text-2xl font-bold text-slate-800">Cluster Topolojisi</h3>
+            <p class="text-slate-600 leading-relaxed text-sm">
+                Aşağıdaki şema, kurulan 7 düğümlü yüksek erişilebilirlikli kümenin mimari yapısını ve temsili ağ planlamasını gösterir.
+                kubectl erişimi k8s-mgmt-01 (192.168.50.50) üzerinden sağlanır.
+            </p>
+            <div class="glass-card p-6 rounded-2xl">
+                <div class="k8s-topology space-y-2">
+                    <div class="flex justify-center">
+                        <div class="k8s-node text-center min-w-[200px]">
+                            <p class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Management</p>
+                            <p class="mono text-sm font-semibold text-slate-800">k8s-mgmt-01</p>
+                            <p class="mono text-xs text-slate-500">192.168.50.50</p>
+                        </div>
+                    </div>
+                    <div class="k8s-connector"></div>
+                    <div class="flex justify-center">
+                        <div class="k8s-node k8s-node-lb text-center min-w-[240px]">
+                            <p class="text-[10px] font-bold uppercase text-cyan-600 tracking-wider">Load Balancer</p>
+                            <p class="mono text-sm font-semibold text-slate-800">k8s-lb-01</p>
+                            <p class="mono text-xs text-slate-600">192.168.50.10 · HAProxy TCP 6443</p>
+                        </div>
+                    </div>
+                    <div class="k8s-connector"></div>
+                    <div class="k8s-connector-bar mx-4"></div>
+                    <p class="text-[10px] font-bold uppercase text-blue-600 tracking-wider text-center pt-1">Control Plane (3)</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div class="k8s-node k8s-node-master text-center">
+                            <p class="mono text-xs font-semibold text-slate-800">k8s-master-01</p>
+                            <p class="mono text-[10px] text-slate-500">192.168.50.11</p>
+                        </div>
+                        <div class="k8s-node k8s-node-master text-center">
+                            <p class="mono text-xs font-semibold text-slate-800">k8s-master-02</p>
+                            <p class="mono text-[10px] text-slate-500">192.168.50.12</p>
+                        </div>
+                        <div class="k8s-node k8s-node-master text-center">
+                            <p class="mono text-xs font-semibold text-slate-800">k8s-master-03</p>
+                            <p class="mono text-[10px] text-slate-500">192.168.50.13</p>
+                        </div>
+                    </div>
+                    <p class="text-[10px] font-bold uppercase text-emerald-600 tracking-wider text-center pt-2">Worker Nodes (2)</p>
+                    <div class="grid grid-cols-2 gap-2 max-w-md mx-auto">
+                        <div class="k8s-node k8s-node-worker text-center">
+                            <p class="mono text-xs font-semibold text-slate-800">k8s-worker-01</p>
+                            <p class="mono text-[10px] text-slate-500">192.168.50.21</p>
+                        </div>
+                        <div class="k8s-node k8s-node-worker text-center">
+                            <p class="mono text-xs font-semibold text-slate-800">k8s-worker-02</p>
+                            <p class="mono text-[10px] text-slate-500">192.168.50.22</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="space-y-4">
+            <div class="bg-slate-900 text-slate-300 p-5 rounded-2xl">
+                <h4 class="text-white font-bold text-sm mb-3 uppercase tracking-tight">Kullanılan Teknolojiler</h4>
+                <ul class="text-xs space-y-2 mono">
+                    <li class="flex justify-between gap-2"><span>İşletim Sistemi:</span> <span class="text-cyan-400">AlmaLinux 8/9</span></li>
+                    <li class="flex justify-between gap-2"><span>Kubernetes:</span> <span class="text-cyan-400">v1.33</span></li>
+                    <li class="flex justify-between gap-2"><span>Runtime:</span> <span class="text-cyan-400">containerd</span></li>
+                    <li class="flex justify-between gap-2"><span>CNI:</span> <span class="text-cyan-400">Flannel (10.244.0.0/16)</span></li>
+                    <li class="flex justify-between gap-2"><span>Load Balancer:</span> <span class="text-cyan-400">HAProxy (L4)</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <section class="mb-16">
+        <h3 class="text-2xl font-bold text-slate-800 mb-6">Timeline</h3>
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm overflow-x-auto">
+            <div class="flex items-center gap-3 min-w-[800px] text-xs font-bold text-slate-600 uppercase tracking-wider">
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-slate-100 border border-slate-300 px-4 py-2 rounded-xl text-center w-full">AlmaLinux Kurulumu</span>
+                </div>
+                <span class="text-slate-300 text-lg">➔</span>
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-slate-100 border border-slate-300 px-4 py-2 rounded-xl text-center w-full">Disk Partitioning</span>
+                </div>
+                <span class="text-slate-300 text-lg">➔</span>
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-slate-100 border border-slate-300 px-4 py-2 rounded-xl text-center w-full">IP &amp; Hostname</span>
+                </div>
+                <span class="text-slate-300 text-lg">➔</span>
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-slate-100 border border-slate-300 px-4 py-2 rounded-xl text-center w-full">SSH &amp; Hosts</span>
+                </div>
+                <span class="text-slate-300 text-lg">➔</span>
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-cyan-50 border border-cyan-300 text-cyan-800 px-4 py-2 rounded-xl text-center w-full">HAProxy Setup</span>
+                </div>
+                <span class="text-slate-300 text-lg">➔</span>
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-blue-50 border border-blue-300 text-blue-800 px-4 py-2 rounded-xl text-center w-full">Container Runtime</span>
+                </div>
+                <span class="text-slate-300 text-lg">➔</span>
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-blue-50 border border-blue-300 text-blue-800 px-4 py-2 rounded-xl text-center w-full">K8s Bootstrap</span>
+                </div>
+                <span class="text-slate-300 text-lg">➔</span>
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-emerald-50 border border-emerald-300 text-emerald-800 px-4 py-2 rounded-xl text-center w-full">Flannel &amp; Join</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="space-y-6">
+            <h3 class="text-2xl font-bold text-slate-800">Altyapı Standartları: Depolama</h3>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <h4 class="font-bold text-slate-800 mb-4">Partition Plan (Fiziksel Disk)</h4>
+                <div class="overflow-hidden rounded-xl border border-slate-200">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 text-slate-600">
+                            <tr>
+                                <th class="px-4 py-3 border-b border-slate-200">Bağlama Noktası (Mount)</th>
+                                <th class="px-4 py-3 border-b border-slate-200">Boyut</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700 mono">
+                            <tr><td class="px-4 py-3">/</td><td class="px-4 py-3">125 GB</td></tr>
+                            <tr><td class="px-4 py-3">/home</td><td class="px-4 py-3">25 GB</td></tr>
+                            <tr><td class="px-4 py-3">/var/log</td><td class="px-4 py-3">75 GB</td></tr>
+                            <tr class="bg-cyan-50"><td class="px-4 py-3 font-bold text-cyan-800">/var/lib</td><td class="px-4 py-3 font-bold text-cyan-800">275 GB</td></tr>
+                            <tr><td class="px-4 py-3">swap</td><td class="px-4 py-3 text-slate-400">0 GB (Devre Dışı)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-cyan-50 border border-cyan-100 p-6 rounded-3xl">
+                <h4 class="font-bold text-cyan-800 mb-3">Teknik Gerekçe</h4>
+                <p class="text-sm text-cyan-700 leading-relaxed">
+                    Kubernetes iş yükleri, container imajları ve çalışma zamanı (runtime) metadataları <b>/var/lib</b> altında kalıcı veriler oluşturur. Bu nedenle, işletim sistemi diskiyle depolama darboğazı (storage contention) yaşanmasını önlemek için bu dizine özel 275 GB'lık bir alan ayrılmıştır. Sistem logları, bakım kolaylığı ve hata izolasyonunu artırmak amacıyla <b>/var/log</b> altında izole edilmiştir. Düğüm kurtarma (node recovery) ve sorun giderme (troubleshooting) süreçlerini basitleştirmek için bilinçli olarak LVM kullanılmamıştır.
+                </p>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <h3 class="text-2xl font-bold text-slate-800">Ağ Yapılandırması ve Yönlendirme</h3>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <h4 class="font-bold text-slate-800 mb-4">Temsili IP Planlaması (Lab / İç Ağ)</h4>
+                <div class="overflow-hidden rounded-xl border border-slate-200">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 text-slate-600">
+                            <tr>
+                                <th class="px-4 py-3 border-b border-slate-200">Hostname</th>
+                                <th class="px-4 py-3 border-b border-slate-200">IP Adresi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700 mono">
+                            <tr><td class="px-4 py-2">k8s-master-01</td><td class="px-4 py-2">192.168.50.11</td></tr>
+                            <tr><td class="px-4 py-2">k8s-master-02</td><td class="px-4 py-2">192.168.50.12</td></tr>
+                            <tr><td class="px-4 py-2">k8s-master-03</td><td class="px-4 py-2">192.168.50.13</td></tr>
+                            <tr><td class="px-4 py-2">k8s-worker-01</td><td class="px-4 py-2">192.168.50.21</td></tr>
+                            <tr><td class="px-4 py-2">k8s-worker-02</td><td class="px-4 py-2">192.168.50.22</td></tr>
+                            <tr class="bg-slate-50 font-semibold"><td class="px-4 py-2">k8s-lb-01</td><td class="px-4 py-2">192.168.50.10</td></tr>
+                            <tr class="bg-slate-50 font-semibold"><td class="px-4 py-2">k8s-mgmt-01</td><td class="px-4 py-2">192.168.50.50</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-6 grid grid-cols-2 gap-4 text-sm mono">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <span class="block text-slate-400 font-sans text-xs font-bold uppercase mb-1">Gateway</span>
+                        <span class="text-slate-800">192.168.50.1</span>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <span class="block text-slate-400 font-sans text-xs font-bold uppercase mb-1">DNS Sunucuları</span>
+                        <span class="block text-slate-800">192.168.50.2</span>
+                        <span class="block text-slate-800">192.168.50.3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-8 bg-slate-100 p-8 rounded-[2rem] border border-slate-200 mb-16">
+        <div class="text-center space-y-2">
+            <h3 class="text-2xl font-bold text-slate-800">Sistem Mühendisliği ve Kurulum Adımları</h3>
+            <p class="text-sm text-slate-500 italic">Donanım hazırlığından, çalışan bir Kubernetes kümesine giden uçtan uca mimari süreç.</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="mode-selector">
+            <button onclick="updateDevopsSimulator(1)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent active-mode" id="btn-devops-1">
+                <h4 class="font-bold text-slate-800 text-sm">1. OS Provision</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">AlmaLinux &amp; Kullanıcılar</p>
+            </button>
+            <button onclick="updateDevopsSimulator(2)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-devops-2">
+                <h4 class="font-bold text-slate-800 text-sm">2. Partitioning</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">Disk Bölümlendirme</p>
+            </button>
+            <button onclick="updateDevopsSimulator(3)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-devops-3">
+                <h4 class="font-bold text-slate-800 text-sm">3. Network</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">Statik IP &amp; Hostname</p>
+            </button>
+            <button onclick="updateDevopsSimulator(4)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-devops-4">
+                <h4 class="font-bold text-slate-800 text-sm">4. SSH &amp; Hosts</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">Kimlik ve İsim Çözümleme</p>
+            </button>
+            <button onclick="updateDevopsSimulator(5)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-devops-5">
+                <h4 class="font-bold text-slate-800 text-sm">5. K8s OS Prep</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">Swap, SELinux, containerd</p>
+            </button>
+            <button onclick="updateDevopsSimulator(6)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-devops-6">
+                <h4 class="font-bold text-slate-800 text-sm">6. HAProxy</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">L4 Load Balancer</p>
+            </button>
+            <button onclick="updateDevopsSimulator(7)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-devops-7">
+                <h4 class="font-bold text-slate-800 text-sm">7. Bootstrap</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">kubeadm init &amp; SAN</p>
+            </button>
+            <button onclick="updateDevopsSimulator(8)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-devops-8">
+                <h4 class="font-bold text-slate-800 text-sm">8. Flannel &amp; Join</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">CNI ve Node Ekleme</p>
+            </button>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl shadow-inner border border-slate-200 mt-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0" style="background-color: var(--brand-accent);" id="step-number-indicator">1</div>
+                        <div>
+                            <h5 class="font-bold text-slate-800 uppercase text-xs tracking-widest">Aşama</h5>
+                            <p id="devops-sim-title" class="text-sm font-bold text-cyan-700 mt-1">AlmaLinux Kurulumu</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold shrink-0">i</div>
+                        <div>
+                            <h5 class="font-bold text-slate-800 uppercase text-xs tracking-widest mb-1">Açıklama</h5>
+                            <p id="devops-sim-detail" class="text-sm text-slate-600 leading-relaxed">Ventoy ile AlmaLinux 8.x kurulumu tamamlandı. Yönetimsel işlemler için 'k8sadmin' kullanıcısı oluşturulup wheel grubuna alınarak sudo yetkilendirmesi sağlandı.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="terminal-bg p-6 rounded-2xl border border-slate-700">
+                    <div class="flex gap-2 mb-4">
+                        <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                    </div>
+                    <h5 class="font-bold text-slate-400 uppercase text-[10px] mb-4 tracking-widest">Terminal Çıktısı</h5>
+                    <div id="devops-sim-log" class="mono text-[11px] space-y-1 text-slate-300 leading-relaxed">
+                        <span class="text-cyan-400">$</span> dnf update -y<br>
+                        <span class="text-cyan-400">$</span> useradd k8sadmin<br>
+                        <span class="text-cyan-400">$</span> passwd k8sadmin<br>
+                        <span class="text-cyan-400">$</span> usermod -aG wheel k8sadmin<br>
+                        <span class="text-emerald-400 font-bold">[OK]</span> Base OS installed and user configured.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="mb-16">
+        <h3 class="text-2xl font-bold text-slate-800 mb-4">HAProxy Yapılandırması</h3>
+        <p class="text-slate-600 text-sm mb-4">
+            k8s-lb-01 (192.168.50.10) üzerinde Kubernetes API trafiği TCP 6443 portundan
+            192.168.50.11–13 adresli master düğümlere roundrobin ile dağıtılır.
+        </p>
+        <div class="bg-slate-900 p-5 rounded-2xl text-white max-w-xl">
+            <h5 class="text-cyan-400 mono text-xs font-bold mb-3 uppercase tracking-widest">haproxy.cfg</h5>
+            <p class="mono text-[11px] text-slate-300 leading-relaxed">
+                frontend k8s-api<br>
+                &nbsp;&nbsp;bind *:6443<br>
+                &nbsp;&nbsp;mode tcp<br>
+                &nbsp;&nbsp;default_backend k8s-masters<br>
+                <br>
+                backend k8s-masters<br>
+                &nbsp;&nbsp;mode tcp<br>
+                &nbsp;&nbsp;balance roundrobin<br>
+                &nbsp;&nbsp;server master1 192.168.50.11:6443 check<br>
+                &nbsp;&nbsp;server master2 192.168.50.12:6443 check<br>
+                &nbsp;&nbsp;server master3 192.168.50.13:6443 check
+            </p>
+        </div>
+    </div>
+
+    <section class="mb-16">
+        <h3 class="text-2xl font-bold text-slate-800 mb-6">Yapılandırma Notları</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm text-center">
+                <div class="text-3xl mb-3">🐳</div>
+                <h5 class="font-bold text-slate-800 text-[10px] uppercase tracking-widest">containerd</h5>
+                <p class="text-xs text-slate-500 mt-2">SystemdCgroup=true ile yapılandırıldı.</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm text-center">
+                <div class="text-3xl mb-3">📜</div>
+                <h5 class="font-bold text-slate-800 text-[10px] uppercase tracking-widest">API SAN</h5>
+                <p class="text-xs text-slate-500 mt-2">Master2/3 IP ve hostname bilgileri sertifikaya eklendi.</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm text-center">
+                <div class="text-3xl mb-3">🕸️</div>
+                <h5 class="font-bold text-slate-800 text-[10px] uppercase tracking-widest">Flannel</h5>
+                <p class="text-xs text-slate-500 mt-2">Pod CIDR: 10.244.0.0/16</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm text-center">
+                <div class="text-3xl mb-3">🚫</div>
+                <h5 class="font-bold text-slate-800 text-[10px] uppercase tracking-widest">Swap Kapalı</h5>
+                <p class="text-xs text-slate-500 mt-2">kubelet gereksinimi için swap devre dışı.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center pt-8 border-t border-slate-200">
+        <p class="text-slate-400 text-sm italic mb-4">Diğer projelerimi incelemek için ana menüye dönebilirsiniz.</p>
+        <a href="index.html" class="inline-block bg-slate-900 text-white px-8 py-3 rounded-full font-bold hover:bg-slate-800 transition-all text-sm">
+            Tüm Portfolyoyu Görüntüle
+        </a>
+    </footer>
+</div>
+
+<script>
+    const devopsSimSteps = {
+        1: {
+            title: 'AlmaLinux Provisioning',
+            detail: 'Ventoy ile AlmaLinux 8.x kurulumu tamamlandı. Yönetimsel işlemler için \'k8sadmin\' kullanıcısı oluşturulup wheel grubuna alınarak sudo yetkilendirmesi sağlandı.',
+            logs: [
+                '<span class="text-cyan-400">$</span> dnf update -y',
+                '<span class="text-cyan-400">$</span> useradd k8sadmin',
+                '<span class="text-cyan-400">$</span> passwd k8sadmin',
+                '<span class="text-cyan-400">$</span> usermod -aG wheel k8sadmin',
+                '<span class="text-emerald-400 font-bold">[OK]</span> Base OS installed and user configured.'
+            ]
+        },
+        2: {
+            title: 'Disk Bölümlendirme',
+            detail: 'Kubernetes verileri için /var/lib izole edildi. LVM kullanılmadı. Dosya sistemi XFS olarak biçimlendirildi ve fstab yapılandırıldı.',
+            logs: [
+                '<span class="text-cyan-400">$</span> lsblk',
+                '<span class="text-cyan-400">$</span> fdisk /dev/sda',
+                '<span class="text-cyan-400">$</span> mkfs.xfs /dev/sdaX',
+                '<span class="text-cyan-400">$</span> mount -a',
+                '<span class="text-emerald-400 font-bold">[OK]</span> Partitions mounted successfully.'
+            ]
+        },
+        3: {
+            title: 'Network Standardizasyonu',
+            detail: 'NetworkManager (nmcli) kullanılarak cihaza statik IP ataması, Gateway ve DNS yönlendirmeleri yapıldı. Hostname kalıcı olarak ayarlandı.',
+            logs: [
+                '<span class="text-cyan-400">$</span> hostnamectl set-hostname k8s-master-01',
+                '<span class="text-cyan-400">$</span> nmcli con mod eth0 ipv4.addr 192.168.50.11/24',
+                '<span class="text-cyan-400">$</span> nmcli con mod eth0 ipv4.gateway 192.168.50.1',
+                '<span class="text-cyan-400">$</span> nmcli con mod eth0 ipv4.dns "192.168.50.2 192.168.50.3"',
+                '<span class="text-emerald-400 font-bold">[OK]</span> Network configuration applied.'
+            ]
+        },
+        4: {
+            title: 'SSH & Hosts Dağıtımı',
+            detail: 'Tüm düğümlerin birbirini IP yerine isimleriyle çözümleyebilmesi için /etc/hosts dosyası hazırlandı ve SSH key ile şifresiz olarak diğer sunuculara dağıtıldı.',
+            logs: [
+                '<span class="text-cyan-400">$</span> ssh-keygen -t rsa',
+                '<span class="text-cyan-400">$</span> ssh-copy-id k8sadmin@192.168.50.12',
+                '<span class="text-cyan-400">$</span> scp /etc/hosts k8sadmin@192.168.50.12:/tmp/',
+                '<span class="text-emerald-400 font-bold">[OK]</span> SSH trust established and hosts distributed.'
+            ]
+        },
+        5: {
+            title: 'Kubernetes OS Hazırlığı',
+            detail: 'kubelet gereksinimi için Swap kapatıldı, SELinux permissive moda çekildi. Ağ trafiği yönlendirmesi için br_netfilter modülü yüklenip containerd başlatıldı.',
+            logs: [
+                '<span class="text-cyan-400">$</span> swapoff -a && sed -i \'/ swap / s/^/#/\' /etc/fstab',
+                '<span class="text-cyan-400">$</span> setenforce 0',
+                '<span class="text-cyan-400">$</span> modprobe overlay && modprobe br_netfilter',
+                '<span class="text-cyan-400">$</span> systemctl enable --now containerd',
+                '<span class="text-emerald-400 font-bold">[OK]</span> containerd (SystemdCgroup=true) aktif.'
+            ]
+        },
+        6: {
+            title: 'HAProxy Load Balancer',
+            detail: 'k8s-lb-01 (192.168.50.10) cihazı üzerinde HAProxy kurularak, K8s API isteklerini (TCP 6443) 3 control-plane düğümüne dağıtacak konfigürasyon yapıldı.',
+            logs: [
+                '<span class="text-slate-400"># /etc/haproxy/haproxy.cfg</span>',
+                '<span class="text-cyan-400">frontend</span> k8s-api',
+                '<span class="text-slate-400">&nbsp;&nbsp;bind *:6443</span>',
+                '<span class="text-slate-400">&nbsp;&nbsp;mode tcp</span>',
+                '<span class="text-slate-400">&nbsp;&nbsp;default_backend k8s-masters</span>',
+                '<span class="text-emerald-400 font-bold">[OK]</span> systemctl restart haproxy'
+            ]
+        },
+        7: {
+            title: 'Cluster Bootstrap (kubeadm)',
+            detail: 'Master1 üzerinde kubeadm init çalıştırıldı. API endpoint adresi olarak LB adresi (192.168.50.10) verildi. Diğer master cihazları sertifikaya SAN olarak eklendi.',
+            logs: [
+                '<span class="text-cyan-400">$</span> kubeadm init \\',
+                '<span class="text-slate-400">&nbsp;&nbsp;--control-plane-endpoint=192.168.50.10:6443 \\</span>',
+                '<span class="text-slate-400">&nbsp;&nbsp;--upload-certs</span>',
+                '<span class="text-slate-400">[DEBUG] SAN: 192.168.50.12, 192.168.50.13, k8s-master-02, k8s-master-03</span>',
+                '<span class="text-emerald-400 font-bold">[OK]</span> Control-plane initialized.'
+            ]
+        },
+        8: {
+            title: 'Flannel CNI & Node Join',
+            detail: 'Kümeye ağ eklentisi olarak Flannel manifestosu apply edildi. Master2/3 control-plane olarak, Worker1/2 ise worker olarak kümeye dahil edildi.',
+            logs: [
+                '<span class="text-cyan-400">$</span> kubectl apply -f kube-flannel.yml',
+                '<span class="text-slate-400">[DEBUG] pod CIDR: 10.244.0.0/16</span>',
+                '<span class="text-cyan-400">$</span> kubeadm join ... <span class="text-slate-500"># (Master2, Master3)</span>',
+                '<span class="text-cyan-400">$</span> kubeadm join ... <span class="text-slate-500"># (Worker1, Worker2)</span>',
+                '<span class="text-cyan-400">$</span> kubectl get nodes',
+                '<span class="text-emerald-400 font-bold">[OK]</span> NAME            STATUS   ROLE',
+                '<span class="text-emerald-400">[OK]</span> k8s-master-01   Ready    control-plane',
+                '<span class="text-emerald-400">[OK]</span> k8s-worker-01   Ready    worker'
+            ]
+        }
+    };
+
+    function updateDevopsSimulator(stepId) {
+        const step = devopsSimSteps[stepId];
+        document.getElementById('step-number-indicator').innerText = stepId;
+        document.getElementById('devops-sim-title').innerText = step.title;
+        document.getElementById('devops-sim-detail').innerText = step.detail;
+        document.getElementById('devops-sim-log').innerHTML = step.logs.join('<br>');
+
+        document.querySelectorAll('.architecture-node').forEach(btn => btn.classList.remove('active-mode', 'glow-blue'));
+        document.getElementById('btn-devops-' + stepId).classList.add('active-mode', 'glow-blue');
+    }
+</script>
+
+</body>
+</html>

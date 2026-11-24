@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Görüntü İşleme ve Nesne Tespiti | Furkan Yılmaz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="assets/common.css">
+</head>
+<body class="antialiased">
+
+<header class="detail-topbar">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="index.html#hardware" class="back-link">
+            <span aria-hidden="true">←</span> Ana Sayfaya Dön
+        </a>
+        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Görüntü İşleme ve Nesne Tespiti</span>
+    </div>
+</header>
+
+<div class="max-w-6xl mx-auto px-4 py-12">
+    <header class="mb-16 border-b pb-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+            <div>
+                <span class="font-bold tracking-widest uppercase text-sm text-emerald-600">Proje</span>
+                <p class="text-sm text-slate-500 mt-1">İş İstasyonu Hazırlığı ve Gerçek Zamanlı Tespit</p>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mt-2">Görüntü İşleme ve Nesne Tespiti</h1>
+                <p class="text-slate-500 mt-4 max-w-2xl text-lg">
+                    Fiziksel bir iş istasyonunda (Precision 3630), ağ, donanım ve derleyici (compiler) yapılandırmaları sıfırdan kurularak Ubuntu 24.04 üzerinde YOLOv8 tabanlı gerçek zamanlı nesne tespiti projesi gerçekleştirilmiştir.
+                </p>
+            </div>
+            <div class="flex gap-3">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                    <span class="block text-2xl font-bold" style="color: var(--brand-accent);">YOLOv8</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold">PyTorch</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                    <span class="block text-2xl font-bold text-emerald-500">CUDA</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold">12.2 / cuDNN 9.6</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+        <div class="lg:col-span-2 space-y-6">
+            <h3 class="text-2xl font-bold text-slate-800">Proje Özeti</h3>
+            <p class="text-slate-600 leading-relaxed">
+                Kamera görüntüsü üzerinde YOLOv8 modeli ile nesne tespiti yapıldı. PyTorch ve CUDA kullanıldı.
+                Standart <code>pip install opencv-python</code> paketi CUDA ve GStreamer desteği içermediği için
+                OpenCV 4.11 kaynak koddan derlendi.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-slate-900 text-slate-300 p-5 rounded-2xl">
+                    <h4 class="text-white font-bold text-sm mb-2 uppercase tracking-tight">Kullanılan Teknolojiler</h4>
+                    <ul class="text-xs space-y-2 mono">
+                        <li class="flex justify-between"><span>Model:</span> <span class="text-emerald-400">YOLOv8</span></li>
+                        <li class="flex justify-between"><span>Framework:</span> <span class="text-emerald-400">PyTorch</span></li>
+                        <li class="flex justify-between"><span>Görüntü İşleme:</span> <span class="text-emerald-400">OpenCV 4.11</span></li>
+                        <li class="flex justify-between"><span>GPU:</span> <span class="text-emerald-400">CUDA 12.2, cuDNN 9.6</span></li>
+                        <li class="flex justify-between"><span>Kamera:</span> <span class="text-emerald-400">GStreamer, V4L2</span></li>
+                    </ul>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-100 p-5 rounded-2xl">
+                    <h4 class="text-emerald-800 font-bold text-sm mb-2 uppercase tracking-tight">OpenCV Source Build</h4>
+                    <p class="text-xs text-emerald-700 leading-relaxed">
+                        Standart pip paketi yerine, CUDA 12.2, cuDNN 9.6, GStreamer ve V4L2 desteklerinin
+                        aktif edilebilmesi için OpenCV 4.11 kaynak koddan derlenmiştir.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+            <h4 class="font-bold text-slate-800 mb-4">CPU ve GPU Gecikme Karşılaştırması</h4>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="inferenceChart"></canvas>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-4 italic text-center">
+                Farklı çözünürlüklerde çıkarım süresi (ms).
+            </p>
+        </div>
+    </div>
+
+    <section class="mb-16">
+        <h3 class="text-2xl font-bold text-slate-800 mb-6">İş İstasyonu Hazırlık ve Geliştirme Çizelgesi</h3>
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm overflow-x-auto">
+            <div class="flex items-center gap-3 min-w-[800px] text-xs font-bold text-slate-600 uppercase tracking-wider">
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-slate-100 border border-slate-300 px-4 py-2 rounded-xl text-center w-full">Netplan &amp; Ağ Hazırlığı</span>
+                </div>
+                <span class="text-slate-300 text-lg">➔</span>
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-emerald-50 border border-emerald-300 text-emerald-800 px-4 py-2 rounded-xl text-center w-full">NVIDIA &amp; CUDA</span>
+                </div>
+                <span class="text-slate-300 text-lg">➔</span>
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-blue-50 border border-blue-300 text-blue-800 px-4 py-2 rounded-xl text-center w-full">OpenCV Kaynak Derleme</span>
+                </div>
+                <span class="text-slate-300 text-lg">➔</span>
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-slate-100 border border-slate-300 px-4 py-2 rounded-xl text-center w-full">Python &amp; PEP 668</span>
+                </div>
+                <span class="text-slate-300 text-lg">➔</span>
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-indigo-50 border border-indigo-300 text-indigo-800 px-4 py-2 rounded-xl text-center w-full">YOLOv8 Testleri</span>
+                </div>
+                <span class="text-slate-300 text-lg">➔</span>
+                <div class="flex flex-col items-center gap-2 w-full">
+                    <span class="bg-emerald-50 border border-emerald-300 text-emerald-800 px-4 py-2 rounded-xl text-center w-full">UI &amp; Kayıt Sistemi</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="space-y-6">
+            <h3 class="text-2xl font-bold text-slate-800">Sistem Mühendisliği Kararları</h3>
+            <div class="bg-cyan-50 border border-cyan-100 p-6 rounded-3xl h-full">
+                <h4 class="font-bold text-cyan-800 mb-3">Ağ ve Derleyici (Compiler) Uyumu</h4>
+                <p class="text-sm text-cyan-800 leading-relaxed mb-4">
+                    Ubuntu 24.04 üzerinde NetworkManager çakışmalarını önlemek için yüksek öncelikli <b>99-netplan.yaml</b> ile statik IP yapılandırıldı. İşletim sistemi NVMe diske kurulup, veri diski izole edildi. <b>CUDA 12.2</b> ile gelen varsayılan GCC 13 uyumsuzluğunu aşmak için <b>GCC 12</b> kurularak test araçları başarıyla derlendi.
+                </p>
+                <h4 class="font-bold text-cyan-800 mb-3">PEP 668 Kısıtlaması</h4>
+                <p class="text-sm text-cyan-800 leading-relaxed">
+                    Ubuntu 24'ün getirdiği <i>externally-managed-environment</i> (PEP 668) kısıtlamalarına takılmamak adına, sisteme global pip müdahalesi yapılmadı. <code>numpy</code> paketi <code>apt</code> üzerinden kurularak CMake'in Python ortamını doğru tanıması sağlandı.
+                </p>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <h3 class="text-2xl font-bold text-slate-800">Yazılım ve Mimari Özellikler</h3>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm h-full">
+                <ul class="text-sm text-slate-600 space-y-4">
+                    <li class="flex gap-3">
+                        <span class="text-emerald-500 font-bold">✓</span>
+                        <span><b>Özel OpenCV Derlemesi:</b> Standart paketlerin yetersizliği nedeniyle CUDA, cuDNN, FFmpeg, GStreamer ve V4L2 donanım bayraklarıyla saatler süren kaynak kod (source) derlemesi yapıldı.</span>
+                    </li>
+                    <li class="flex gap-3">
+                        <span class="text-emerald-500 font-bold">✓</span>
+                        <span><b>Türkçe Karakter (FreeType):</b> OpenCV'nin varsayılan metin çizicisi Türkçe desteklemediği için, Pillow ve FreeType kullanılarak özel bir render katmanı yazıldı.</span>
+                    </li>
+                    <li class="flex gap-3">
+                        <span class="text-emerald-500 font-bold">✓</span>
+                        <span><b>Etiket Kayıt Sistemi:</b> Modelin tespit ettiği nesnelerin İngilizce etiketlerini kalıcı ID ile <code>source.json</code>'a kaydeden ve <code>tr.json</code>'dan çevirisini çeken dinamik bir yapı kuruldu.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-8 bg-slate-100 p-8 rounded-[2rem] border border-slate-200 mb-16">
+        <div class="text-center space-y-2">
+            <h3 class="text-2xl font-bold text-slate-800">Kurulum ve Geliştirme Adımları</h3>
+            <p class="text-sm text-slate-500 italic">İşletim sistemi ağ ayarlarından, nesne tespiti modeline kadar geçen tüm süreç.</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="mode-selector">
+            <button onclick="updateCvSimulator(1)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent active-mode" id="btn-cv-1">
+                <h4 class="font-bold text-slate-800 text-sm">1. Ağ ve OS Hazırlığı</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">Netplan ve Temel Bağımlılıklar</p>
+            </button>
+            <button onclick="updateCvSimulator(2)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-cv-2">
+                <h4 class="font-bold text-slate-800 text-sm">2. Sürücü &amp; CUDA</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">NVIDIA P2000 ve GCC 12</p>
+            </button>
+            <button onclick="updateCvSimulator(3)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-cv-3">
+                <h4 class="font-bold text-slate-800 text-sm">3. OpenCV Derleme</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">CUDA, FFmpeg, GStreamer</p>
+            </button>
+            <button onclick="updateCvSimulator(4)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-cv-4">
+                <h4 class="font-bold text-slate-800 text-sm">4. Python Ortamı</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">PEP 668 Uyumu ve Venv</p>
+            </button>
+            <button onclick="updateCvSimulator(5)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-cv-5">
+                <h4 class="font-bold text-slate-800 text-sm">5. YOLOv8 Çıkarımı</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">YOLOv8 Gerçek Zamanlı Test</p>
+            </button>
+            <button onclick="updateCvSimulator(6)" class="architecture-node p-4 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-cv-6">
+                <h4 class="font-bold text-slate-800 text-sm">6. Arayüz ve Kayıt</h4>
+                <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">FreeType ve JSON Etiketleme</p>
+            </button>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl shadow-inner border border-slate-200 mt-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0" style="background-color: var(--brand-accent);" id="step-number-indicator">1</div>
+                        <div>
+                            <h5 class="font-bold text-slate-800 uppercase text-xs tracking-widest">Aşama</h5>
+                            <p id="cv-sim-title" class="text-sm font-bold text-emerald-700 mt-1">Ağ ve OS Hazırlığı</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold shrink-0">i</div>
+                        <div>
+                            <h5 class="font-bold text-slate-800 uppercase text-xs tracking-widest mb-1">Açıklama</h5>
+                            <p id="cv-sim-detail" class="text-sm text-slate-600 leading-relaxed">NetworkManager üzerinden yüksek öncelikli Netplan dosyası ile statik IP ayarlandı. İşletim sistemi NVMe diske kurularak veri diskinden izole edildi.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold shrink-0">»</div>
+                        <div class="w-full">
+                            <h5 class="font-bold text-slate-800 uppercase text-xs tracking-widest mb-2">İlerleme</h5>
+                            <div class="flex items-center gap-3">
+                                <div class="h-2 bg-slate-100 rounded-full flex-1 max-w-[200px]">
+                                    <div id="cv-sim-progress" class="h-full bg-emerald-500 rounded-full transition-all duration-1000" style="width: 16%"></div>
+                                </div>
+                                <span id="cv-sim-val" class="text-sm font-bold text-slate-700">OS Hazır</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="terminal-bg p-6 rounded-2xl border border-slate-700 h-full flex flex-col min-h-[200px]">
+                    <div class="flex gap-2 mb-4">
+                        <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                    </div>
+                    <h5 class="font-bold text-slate-400 uppercase text-[10px] mb-4 tracking-widest">Terminal Çıktısı</h5>
+                    <div id="cv-sim-log" class="mono text-[11px] space-y-1 text-slate-300 leading-relaxed">
+                        <span class="text-emerald-400">$</span> nano /etc/netplan/99-netplan.yaml<br>
+                        <span class="text-slate-400">[DEBUG]</span> IP: 192.168.50.60/24, Gateway: 192.168.50.1<br>
+                        <span class="text-emerald-400 font-bold">[OK]</span> NetworkManager renderer aktif.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div class="space-y-4">
+            <h3 class="text-2xl font-bold text-slate-800">OpenCV Derleme</h3>
+            <p class="text-slate-600 text-sm">
+                CMake ile aşağıdaki bayraklar aktif edilerek OpenCV 4.11 derlendi.
+                Derleme sonrası <code>cv2.getBuildInformation()</code> ile CUDA, GStreamer ve V4L2 destekleri doğrulandı.
+            </p>
+            <div class="bg-slate-900 p-5 rounded-2xl text-white">
+                <h5 class="text-emerald-400 mono text-xs font-bold mb-3 uppercase tracking-widest">CMake (özet)</h5>
+                <p class="mono text-[11px] text-slate-300 leading-relaxed">
+                    cmake -D WITH_CUDA=ON \<br>
+                    &nbsp;&nbsp;-D WITH_CUDNN=ON \<br>
+                    &nbsp;&nbsp;-D WITH_GSTREAMER=ON \<br>
+                    &nbsp;&nbsp;-D WITH_V4L=ON ..
+                </p>
+            </div>
+        </div>
+        <div class="glass-card p-8 rounded-3xl flex flex-col justify-center">
+            <h4 class="font-bold text-slate-800 mb-6">Derleme Doğrulama</h4>
+            <div class="bg-black/80 p-4 rounded-xl border border-slate-700 font-mono text-[11px] text-green-400 space-y-2">
+                <p>>>> import cv2</p>
+                <p>>>> print(cv2.getBuildInformation())</p>
+                <p class="text-slate-300 mt-2">GStreamer: <span class="text-green-400">YES</span></p>
+                <p>v4l/v4l2: <span class="text-green-400">YES</span></p>
+                <p>CUDA: <span class="text-green-400">YES (12.2)</span></p>
+                <p>cuDNN: <span class="text-green-400">YES (9.6)</span></p>
+            </div>
+        </div>
+    </div>
+
+    <section class="mb-16">
+        <h3 class="text-2xl font-bold text-slate-800 mb-6">Uygulama Özellikleri</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm text-center">
+                <div class="text-3xl mb-3">🔄</div>
+                <h5 class="font-bold text-slate-800 text-[10px] uppercase tracking-widest">CPU/GPU Geçişi</h5>
+                <p class="text-xs text-slate-500 mt-2">Çalışma sırasında CPU ve GPU (cuda) arasında anlık geçiş yapılabilir.</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm text-center">
+                <div class="text-3xl mb-3">📷</div>
+                <h5 class="font-bold text-slate-800 text-[10px] uppercase tracking-widest">USB Kamera</h5>
+                <p class="text-xs text-slate-500 mt-2">V4L2 üzerinden USB kamera girişi test edildi.</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm text-center">
+                <div class="text-3xl mb-3">📱</div>
+                <h5 class="font-bold text-slate-800 text-[10px] uppercase tracking-widest">Android Kamera</h5>
+                <p class="text-xs text-slate-500 mt-2">scrcpy ve v4l2loopback ile Android kamera girişi test edildi.</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm text-center">
+                <div class="text-3xl mb-3">🎬</div>
+                <h5 class="font-bold text-slate-800 text-[10px] uppercase tracking-widest">Video Kayıt</h5>
+                <p class="text-xs text-slate-500 mt-2">Tespit çıktısı MJPG formatında kaydedilebilir.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center pt-8 border-t border-slate-200">
+        <p class="text-slate-400 text-sm italic mb-4">Diğer projelerimi incelemek için ana menüye dönebilirsiniz.</p>
+        <a href="index.html" class="inline-block bg-slate-900 text-white px-8 py-3 rounded-full font-bold hover:bg-slate-800 transition-all text-sm">
+            Tüm Portfolyoyu Görüntüle
+        </a>
+    </footer>
+</div>
+
+<script>
+    const cvSimSteps = {
+        1: {
+            title: 'Ağ ve OS Hazırlığı',
+            detail: 'NetworkManager üzerinden yüksek öncelikli Netplan dosyası ile statik IP ayarlandı. İşletim sistemi NVMe diske kurularak veri diskinden izole edildi.',
+            val: 'OS Hazır',
+            width: '16%',
+            logs: [
+                '<span class="text-emerald-400">$</span> nano /etc/netplan/99-netplan.yaml',
+                '<span class="text-slate-400">[DEBUG]</span> IP: 192.168.50.60/24, Gateway: 192.168.50.1',
+                '<span class="text-emerald-400 font-bold">[OK]</span> NetworkManager renderer aktif.'
+            ]
+        },
+        2: {
+            title: 'NVIDIA Sürücüleri ve CUDA',
+            detail: 'Nouveau sürücüsü kapatılıp Quadro P2000 için özel NVIDIA sürücüsü kuruldu. CUDA 12.2 ve cuDNN 9.6 entegre edildi. GCC 13 uyumsuzluğu nedeniyle GCC 12 kurularak araçlar derlendi.',
+            val: 'CUDA Hazır',
+            width: '33%',
+            logs: [
+                '<span class="text-emerald-400">$</span> sh cuda_12.2.0_linux.run --silent --toolkit',
+                '<span class="text-emerald-400">$</span> make -j$(nproc) HOST_COMPILER=g++-12',
+                '<span class="text-emerald-400 font-bold">[OK]</span> ./deviceQuery -> PASS'
+            ]
+        },
+        3: {
+            title: 'OpenCV Kaynak Derlemesi',
+            detail: 'OpenCV 4.11 ve opencv_contrib paketleri; CMake kullanılarak CUDA, cuDNN, FFmpeg, GStreamer ve v4l2 destekleri aktif edilerek kaynak koddan derlendi.',
+            val: 'OpenCV Hazır',
+            width: '50%',
+            logs: [
+                '<span class="text-emerald-400">$</span> cmake -D WITH_CUDA=ON -D WITH_GSTREAMER=ON ...',
+                '<span class="text-slate-400">[DEBUG]</span> Modüller derleniyor...',
+                '<span class="text-emerald-400 font-bold">[OK]</span> cv2.getBuildInformation() -> GStreamer: YES'
+            ]
+        },
+        4: {
+            title: 'Python Ortamı ve Bağımlılıklar',
+            detail: 'Ubuntu 24 üzerindeki PEP 668 (externally-managed-environment) kısıtlamalarını aşmak için python3-numpy apt üzerinden kuruldu. Proje venv içerisine izole edildi.',
+            val: 'Python Hazır',
+            width: '66%',
+            logs: [
+                '<span class="text-emerald-400">$</span> sudo apt install python3-numpy',
+                '<span class="text-emerald-400">$</span> python3 -m venv cv_env',
+                '<span class="text-emerald-400 font-bold">[OK]</span> import cv2 başarılı.'
+            ]
+        },
+        5: {
+            title: 'YOLOv8 Çıkarımı',
+            detail: 'PyTorch tabanlı YOLOv8 modeli canlı kamera akışı üzerinde test edildi. Arayüzden CPU ve GPU (cuda:0) arasında dinamik geçiş sağlandı.',
+            val: 'Model Aktif',
+            width: '83%',
+            logs: [
+                '<span class="text-emerald-400">$</span> python app/mainCamTest.py',
+                '<span class="text-slate-400">[DEBUG]</span> device: cuda:0 (Quadro P2000)',
+                '<span class="text-emerald-400 font-bold">[OK]</span> Model yüklendi. Inference başlatıldı.'
+            ]
+        },
+        6: {
+            title: 'Arayüz ve Kayıt Sistemi',
+            detail: 'OpenCV metin kısıtlamalarını aşmak için FreeType/Pillow kullanıldı. Tespit edilen nesneler kalıcı ID ile source.json ve tr.json dosyalarına kaydedildi.',
+            val: 'Sistem Tamam',
+            width: '100%',
+            logs: [
+                '<span class="text-slate-400">[DEBUG]</span> Yeni etiket tespit edildi: "bottle"',
+                '<span class="text-emerald-400">$</span> tools/label_registry.py tetiklendi',
+                '<span class="text-emerald-400 font-bold">[OK]</span> Etiket source.json dosyasına kaydedildi.'
+            ]
+        }
+    };
+
+    function updateCvSimulator(stepId) {
+        const step = cvSimSteps[stepId];
+        document.getElementById('step-number-indicator').innerText = stepId;
+        document.getElementById('cv-sim-title').innerText = step.title;
+        document.getElementById('cv-sim-detail').innerText = step.detail;
+        document.getElementById('cv-sim-val').innerText = step.val;
+        document.getElementById('cv-sim-progress').style.width = step.width;
+        document.getElementById('cv-sim-log').innerHTML = step.logs.join('<br>');
+        document.querySelectorAll('.architecture-node').forEach(btn => btn.classList.remove('active-mode', 'glow-blue'));
+        document.getElementById('btn-cv-' + stepId).classList.add('active-mode', 'glow-blue');
+    }
+
+    function initCvCharts() {
+        new Chart(document.getElementById('inferenceChart'), {
+            type: 'bar',
+            data: {
+                labels: ['720p', '1080p', '2K'],
+                datasets: [{
+                    label: 'GPU (ms)',
+                    data: [12, 16, 28],
+                    backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                    borderRadius: 6
+                }, {
+                    label: 'CPU (ms)',
+                    data: [85, 140, 310],
+                    backgroundColor: 'rgba(148, 163, 184, 0.7)',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } } },
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'Gecikme (ms)' } } }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initCvCharts);
+</script>
+
+</body>
+</html>

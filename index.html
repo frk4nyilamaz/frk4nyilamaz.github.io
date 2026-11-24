@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Furkan Yılmaz | Portfolyo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="assets/common.css">
+</head>
+<body class="antialiased">
+
+<div class="flex min-h-screen">
+    <aside class="w-64 glass-card border-r fixed h-full z-50 hidden md:block">
+        <div class="p-6 border-b border-slate-200">
+            <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Furkan Yılmaz</h1>
+            <p class="text-base text-slate-500 font-medium mt-1">Bilgisayar Mühendisi</p>
+            <div class="flex space-x-4 mt-4">
+                <a href="https://linkedin.com/in/furkancs" target="_blank" class="text-sm text-blue-600 font-semibold hover:text-blue-800 transition-colors">LinkedIn</a>
+                <a href="https://github.com/frk4nyilamaz/" target="_blank" class="text-sm text-slate-800 font-semibold hover:text-slate-600 transition-colors">GitHub</a>
+            </div>
+        </div>
+        <nav class="mt-4 px-4 space-y-1">
+            <a href="#summary" onclick="showSection('summary')" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors active">
+                <span class="mr-3">👤</span> Profil Özeti
+            </a>
+            <a href="#ai-rag" onclick="showSection('ai-rag')" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors">
+                <span class="mr-3">🤖</span> RAG Chatbot
+            </a>
+            <a href="#devops" onclick="showSection('devops')" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors">
+                <span class="mr-3">☁️</span> Sistem Yönetimi ve Kubernetes
+            </a>
+            <a href="#hardware" onclick="showSection('hardware')" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors">
+                <span class="mr-3">📷</span> Görüntü İşleme ve Nesne Tespiti
+            </a>
+            <a href="#network" onclick="showSection('network')" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors">
+                <span class="mr-3">🌐</span> Ağ ve Soket Programlama
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 md:ml-64 p-4 md:p-10 pb-20">
+
+        <!-- SECTION: SUMMARY -->
+        <section id="section-summary" class="section-content space-y-8 max-w-5xl mx-auto">
+            <div class="space-y-4">
+                <h2 class="text-3xl font-extrabold text-slate-900">Profil Özeti</h2>
+                <p class="text-lg text-slate-600 leading-relaxed max-w-3xl">
+                    Bilgisayar Mühendisliği mezunuyum. Eğitim ve staj süreçlerimde; 
+                    görüntü işleme ve ağ programlama alanlarında sistem geliştirmeleri, 
+                    yüksek erişilebilir sunucu kurulumları ve Kubernetes küme yönetimi gibi sistemler
+                    geliştirerek sistem mühendisliği alanında pratik tecrübe edindim.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="text-cyan-500 mb-4 text-2xl">☁️</div>
+                    <h3 class="font-bold text-slate-800">Sistem Yönetimi ve K8s</h3>
+                    <p class="text-sm text-slate-500 mt-2">AlmaLinux, Kubeadm, containerd, Flannel CNI, HAProxy, Ventoy, Kickstart.</p>
+                </div>
+                <div class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="text-indigo-500 mb-4 text-2xl">🤖</div>
+                    <h3 class="font-bold text-slate-800">Yapay Zeka Uygulamaları</h3>
+                    <p class="text-sm text-slate-500 mt-2">RAG chatbot, Ollama, FastAPI, ChromaDB, çoklu LLM mimarisi karşılaştırması.</p>
+                </div>
+                <div class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="text-emerald-500 mb-4 text-2xl">📷</div>
+                    <h3 class="font-bold text-slate-800">Görüntü İşleme ve Nesne Tespiti</h3>
+                    <p class="text-sm text-slate-500 mt-2">YOLOv8, OpenCV kaynak derlemesi, CUDA 12.2, PyTorch.</p>
+                </div>
+                <div class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="text-blue-500 mb-4 text-2xl">🌐</div>
+                    <h3 class="font-bold text-slate-800">Ağ ve Soket Programlama</h3>
+                    <p class="text-sm text-slate-500 mt-2">FastAPI, Native WebSocket, SQLite WAL, JWT, bcrypt.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: AI -->
+        <section id="section-ai-rag" class="section-content hidden space-y-10 max-w-5xl mx-auto">
+            <div class="bg-indigo-900 text-white p-8 rounded-3xl shadow-xl overflow-hidden relative">
+                <div class="relative z-10">
+                    <span class="bg-indigo-500/30 text-indigo-200 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Bitirme Projesi</span>
+                    <h2 class="text-3xl font-bold mt-4">Yapay Zeka Uygulamaları</h2>
+                    <p class="text-indigo-200 text-sm mt-1">Çoklu Mimarili RAG Chatbot</p>
+                    <p class="text-indigo-100 mt-3 max-w-2xl text-sm leading-relaxed">
+                        Karar veren model (Router) olarak kullanılan bir LLM ile RAG gerektiren ve gerektirmeyen (chitchat) soruların ayrıştırıldığı
+                        bir chatbot sistemi. Ollama, FastAPI ve ChromaDB kullanıldı.
+                    </p>
+                    <a href="detay-ai-rag.html" class="inline-flex items-center gap-2 mt-6 bg-white text-indigo-900 px-5 py-2.5 rounded-full text-sm font-bold hover:bg-indigo-100 transition-colors">
+                        Detaylı İncele <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="font-bold text-slate-800 mb-4">Mimari Gecikme Karşılaştırması</h3>
+                    <p class="text-xs text-slate-500 mb-6 italic">Direct Turkish, Dual Sequential ve Generate + Translate modlarının ortalama yanıt süreleri.</p>
+                    <div class="chart-container">
+                        <canvas id="ragLatencyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-800">Router Akışı</h3>
+                    <div class="relative pl-8 space-y-6">
+                        <div class="relative">
+                            <div class="step-line"></div>
+                            <div class="step-node absolute -left-8 top-1"></div>
+                            <h4 class="font-semibold text-sm text-slate-700">1. Heuristic Kontrol</h4>
+                            <p class="text-sm text-slate-500">Basit selamlaşma soruları kural tabanlı yanıtlanır.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="step-line"></div>
+                            <div class="step-node absolute -left-8 top-1"></div>
+                            <h4 class="font-semibold text-sm text-slate-700">2. Bağlam Çekimi</h4>
+                            <p class="text-sm text-slate-500">Vektör araması ile ilgili pasajlar çekilir.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="step-node absolute -left-8 top-1"></div>
+                            <h4 class="font-semibold text-sm text-slate-700">3. Router Kararı</h4>
+                            <p class="text-sm text-slate-500">Router, uygun RAG mimarisini seçer.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mt-6">
+                        <h4 class="text-xs font-bold text-yellow-800 uppercase">Geri Bildirim Döngüsü</h4>
+                        <p class="text-xs text-yellow-700 mt-1">Düşük puanlı yanıtlar anahtar kelime eşleşmesi ile tespit edilip benzer sorularda modele uyarı olarak verilir.</p>
+                    </div>
+
+                    <a href="detay-ai-rag.html" class="inline-flex items-center gap-2 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                        Proje detaylarını incele <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: DEVOPS -->
+        <section id="section-devops" class="section-content hidden space-y-10 max-w-5xl mx-auto">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-xl overflow-hidden relative">
+                <div class="relative z-10">
+                    <span class="bg-cyan-500/30 text-cyan-200 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Staj Projesi</span>
+                    <h2 class="text-3xl font-bold mt-4">Sistem Yönetimi ve Kubernetes</h2>
+                    <p class="text-slate-400 text-sm mt-1">Çoklu Düğüm K8s Kurulumu</p>
+                    <p class="text-slate-300 mt-3 max-w-2xl text-sm leading-relaxed">
+                        Staj kapsamında yapılan sistem altyapı ve kurulum çalışması. AlmaLinux 8/9 üzerinde
+                        kubeadm ile çok düğümlü cluster kuruldu; API trafiği 192.168.50.10 (HAProxy) üzerinden yönlendirildi.
+                    </p>
+                    <a href="detay-devops.html" class="inline-flex items-center gap-2 mt-6 bg-white text-slate-900 px-5 py-2.5 rounded-full text-sm font-bold hover:bg-cyan-100 transition-colors">
+                        Detaylı İncele <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="font-bold text-slate-800 mb-4">Cluster Topolojisi</h3>
+                    <p class="text-xs text-slate-500 mb-4">192.168.50.0/24 temsili ağındaki makine rolleri ve IP adresleri.</p>
+                    <div class="k8s-topology space-y-2">
+                        <div class="flex justify-center">
+                            <div class="k8s-node text-center min-w-[200px]">
+                                <p class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Management</p>
+                                <p class="mono text-sm font-semibold text-slate-800">k8s-mgmt-01</p>
+                                <p class="mono text-xs text-slate-500">192.168.50.50</p>
+                            </div>
+                        </div>
+                        <div class="k8s-connector"></div>
+                        <div class="flex justify-center">
+                            <div class="k8s-node k8s-node-lb text-center min-w-[220px]">
+                                <p class="text-[10px] font-bold uppercase text-cyan-600 tracking-wider">Load Balancer</p>
+                                <p class="mono text-sm font-semibold text-slate-800">k8s-lb-01</p>
+                                <p class="mono text-xs text-slate-600">192.168.50.10 · HAProxy TCP 6443</p>
+                            </div>
+                        </div>
+                        <div class="k8s-connector"></div>
+                        <div class="k8s-connector-bar mx-4"></div>
+                        <p class="text-[10px] font-bold uppercase text-blue-600 tracking-wider text-center pt-1">Control Plane (3)</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 px-2">
+                            <div class="k8s-node k8s-node-master text-center">
+                                <p class="mono text-xs font-semibold text-slate-800">k8s-master-01</p>
+                                <p class="mono text-[10px] text-slate-500">192.168.50.11</p>
+                            </div>
+                            <div class="k8s-node k8s-node-master text-center">
+                                <p class="mono text-xs font-semibold text-slate-800">k8s-master-02</p>
+                                <p class="mono text-[10px] text-slate-500">192.168.50.12</p>
+                            </div>
+                            <div class="k8s-node k8s-node-master text-center">
+                                <p class="mono text-xs font-semibold text-slate-800">k8s-master-03</p>
+                                <p class="mono text-[10px] text-slate-500">192.168.50.13</p>
+                            </div>
+                        </div>
+                        <p class="text-[10px] font-bold uppercase text-emerald-600 tracking-wider text-center pt-2">Worker Nodes (2)</p>
+                        <div class="grid grid-cols-2 gap-2 max-w-sm mx-auto px-2">
+                            <div class="k8s-node k8s-node-worker text-center">
+                                <p class="mono text-xs font-semibold text-slate-800">k8s-worker-01</p>
+                                <p class="mono text-[10px] text-slate-500">192.168.50.21</p>
+                            </div>
+                            <div class="k8s-node k8s-node-worker text-center">
+                                <p class="mono text-xs font-semibold text-slate-800">k8s-worker-02</p>
+                                <p class="mono text-[10px] text-slate-500">192.168.50.22</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-800">Kullanılan Bileşenler</h3>
+                    <ul class="text-sm text-slate-600 space-y-2">
+                        <li><span class="font-semibold text-slate-700">OS:</span> AlmaLinux 8/9</li>
+                        <li><span class="font-semibold text-slate-700">Kubernetes:</span> v1.33 (kubeadm)</li>
+                        <li><span class="font-semibold text-slate-700">Runtime:</span> containerd</li>
+                        <li><span class="font-semibold text-slate-700">CNI:</span> Flannel (10.244.0.0/16)</li>
+                        <li><span class="font-semibold text-slate-700">LB:</span> HAProxy L4 (TCP 6443)</li>
+                    </ul>
+
+                    <div class="bg-cyan-50 border-l-4 border-cyan-400 p-4 rounded-r-lg mt-4">
+                        <h4 class="text-xs font-bold text-cyan-800 uppercase">Kurulum Özeti</h4>
+                        <p class="text-xs text-cyan-700 mt-1">Ventoy/Kickstart ile OS kurulumu. /etc/hosts eşit dağıtımı, swap kapalı, containerd + kubeadm init (endpoint: 192.168.50.10:6443), Flannel apply ve node join işlemleri.</p>
+                    </div>
+
+                    <a href="detay-devops.html" class="inline-flex items-center gap-2 text-sm font-bold text-cyan-600 hover:text-cyan-800 transition-colors">
+                        Kurulum detaylarını incele <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: HARDWARE -->
+        <section id="section-hardware" class="section-content hidden space-y-10 max-w-5xl mx-auto">
+            <div class="bg-emerald-900 text-white p-8 rounded-3xl shadow-xl overflow-hidden relative">
+                <div class="relative z-10">
+                    <span class="bg-emerald-500/30 text-emerald-200 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Proje</span>
+                    <h2 class="text-3xl font-bold mt-4">Görüntü İşleme ve Nesne Tespiti</h2>
+                    <p class="text-emerald-200 text-sm mt-1">YOLOv8 ile Gerçek Zamanlı Tespit</p>
+                    <p class="text-emerald-100 mt-3 max-w-2xl text-sm leading-relaxed">
+                        Ubuntu 24 üzerinde YOLOv8, PyTorch, CUDA 12.2 ve kaynak koddan derlenmiş OpenCV 4.11
+                        kullanılarak gerçek zamanlı nesne tespiti uygulaması geliştirildi.
+                    </p>
+                    <a href="detay-donanim.html" class="inline-flex items-center gap-2 mt-6 bg-white text-emerald-900 px-5 py-2.5 rounded-full text-sm font-bold hover:bg-emerald-100 transition-colors">
+                        Detaylı İncele <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="font-bold text-slate-800 mb-4">CPU ve GPU FPS Karşılaştırması</h3>
+                    <p class="text-xs text-slate-500 mb-6 italic">Farklı çözünürlüklerde CUDA ve CPU çıkarım sonuçları.</p>
+                    <div class="chart-container">
+                        <canvas id="gpuChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-800">Proje Adımları</h3>
+                    <div class="relative pl-8 space-y-6">
+                        <div class="relative">
+                            <div class="step-line"></div>
+                            <div class="step-node absolute -left-8 top-1"></div>
+                            <h4 class="font-semibold text-sm text-slate-700">1. CUDA Ortamı</h4>
+                            <p class="text-sm text-slate-500">CUDA 12.2 ve cuDNN 9.6 kurulumu.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="step-line"></div>
+                            <div class="step-node absolute -left-8 top-1"></div>
+                            <h4 class="font-semibold text-sm text-slate-700">2. OpenCV Derleme</h4>
+                            <p class="text-sm text-slate-500">CUDA, GStreamer ve V4L2 destekleriyle kaynak koddan derleme.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="step-line"></div>
+                            <div class="step-node absolute -left-8 top-1"></div>
+                            <h4 class="font-semibold text-sm text-slate-700">3. YOLOv8 Çıkarımı</h4>
+                            <p class="text-sm text-slate-500">PyTorch üzerinde model çalıştırma.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="step-node absolute -left-8 top-1"></div>
+                            <h4 class="font-semibold text-sm text-slate-700">4. Kamera ve Kayıt</h4>
+                            <p class="text-sm text-slate-500">USB/Android kamera girişi ve MJPG video kaydı.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mt-6">
+                        <h4 class="text-xs font-bold text-yellow-800 uppercase">OpenCV Source Build</h4>
+                        <p class="text-xs text-yellow-700 mt-1">Standart pip paketi CUDA ve GStreamer desteği içermez; bu nedenle OpenCV 4.11 kaynak koddan derlendi.</p>
+                    </div>
+
+                    <a href="detay-donanim.html" class="inline-flex items-center gap-2 text-sm font-bold text-emerald-600 hover:text-emerald-800 transition-colors">
+                        Proje detaylarını incele <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: NETWORK -->
+        <section id="section-network" class="section-content hidden space-y-10 max-w-5xl mx-auto">
+            <div class="bg-blue-900 text-white p-8 rounded-3xl shadow-xl overflow-hidden relative">
+                <div class="relative z-10">
+                    <span class="bg-blue-500/30 text-blue-200 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Proje</span>
+                    <h2 class="text-3xl font-bold mt-4">Ağ ve Soket Programlama</h2>
+                    <p class="text-blue-200 text-sm mt-1">LAN Tabanlı Sohbet Uygulaması</p>
+                    <p class="text-blue-100 mt-3 max-w-2xl text-sm leading-relaxed">
+                        Yerel ağ (LAN) üzerinde çalışan, internetsiz ortamlar için geliştirilmiş bir sohbet uygulaması.
+                        FastAPI backend, Native WebSocket, SQLite (WAL modu), JWT (RS256) ve bcrypt kullanıldı.
+                    </p>
+                    <a href="detay-network.html" class="inline-flex items-center gap-2 mt-6 bg-white text-blue-900 px-5 py-2.5 rounded-full text-sm font-bold hover:bg-blue-100 transition-colors">
+                        Detaylı İncele <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="font-bold text-slate-800 mb-4">Kullanılan Teknolojiler</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-4 border border-slate-200 rounded-2xl text-center">
+                            <div class="text-xl mb-2">⚡</div>
+                            <h4 class="text-xs font-bold uppercase">FastAPI</h4>
+                            <p class="text-[11px] text-slate-500 mt-1">Backend API ve WebSocket sunucusu.</p>
+                        </div>
+                        <div class="p-4 border border-slate-200 rounded-2xl text-center">
+                            <div class="text-xl mb-2">🔌</div>
+                            <h4 class="text-xs font-bold uppercase">WebSocket</h4>
+                            <p class="text-[11px] text-slate-500 mt-1">Anlık mesajlaşma protokolü.</p>
+                        </div>
+                        <div class="p-4 border border-slate-200 rounded-2xl text-center">
+                            <div class="text-xl mb-2">💾</div>
+                            <h4 class="text-xs font-bold uppercase">SQLite WAL</h4>
+                            <p class="text-[11px] text-slate-500 mt-1">Eşzamanlı yazma için WAL modu.</p>
+                        </div>
+                        <div class="p-4 border border-slate-200 rounded-2xl text-center">
+                            <div class="text-xl mb-2">🔑</div>
+                            <h4 class="text-xs font-bold uppercase">JWT + bcrypt</h4>
+                            <p class="text-[11px] text-slate-500 mt-1">Yerel kimlik doğrulama.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-800">Mesajlaşma Akışı</h3>
+                    <div class="relative pl-8 space-y-6">
+                        <div class="relative">
+                            <div class="step-line"></div>
+                            <div class="step-node absolute -left-8 top-1"></div>
+                            <h4 class="font-semibold text-sm text-slate-700">1. WebSocket Bağlantısı</h4>
+                            <p class="text-sm text-slate-500">İstemci-sunucu arasında protokol yükseltme.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="step-line"></div>
+                            <div class="step-node absolute -left-8 top-1"></div>
+                            <h4 class="font-semibold text-sm text-slate-700">2. JWT Doğrulama</h4>
+                            <p class="text-sm text-slate-500">RS256 ile yerel token kontrolü.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="step-line"></div>
+                            <div class="step-node absolute -left-8 top-1"></div>
+                            <h4 class="font-semibold text-sm text-slate-700">3. SQLite Kayıt</h4>
+                            <p class="text-sm text-slate-500">WAL modunda mesaj kalıcılığı.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="step-node absolute -left-8 top-1"></div>
+                            <h4 class="font-semibold text-sm text-slate-700">4. Broadcast</h4>
+                            <p class="text-sm text-slate-500">Bağlı istemcilere mesaj dağıtımı.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg mt-6">
+                        <h4 class="text-xs font-bold text-blue-800 uppercase">Kurulum</h4>
+                        <p class="text-xs text-blue-700 mt-1">PowerShell ve Batch scriptleri ile USB üzerinden internet gerektirmeden kurulum yapılabilir.</p>
+                    </div>
+
+                    <a href="detay-network.html" class="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors">
+                        Proje detaylarını incele <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    function showSection(sectionId) {
+        document.querySelectorAll('.section-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById('section-' + sectionId).classList.remove('hidden');
+        document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+        const activeLink = document.querySelector(`a[href="#${sectionId}"]`);
+        if(activeLink) activeLink.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function initCharts() {
+        new Chart(document.getElementById('ragLatencyChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Direct Turkish', 'Dual Sequential', 'Generate + Translate'],
+                datasets: [{
+                    label: 'Ortalama Gecikme (Saniye)',
+                    data: [42, 65, 92],
+                    backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(99, 102, 241, 0.7)', 'rgba(79, 70, 229, 0.7)'],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'Saniye (sn)' } } }
+            }
+        });
+
+        new Chart(document.getElementById('gpuChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['VGA', '720p', '1080p', '2K'],
+                datasets: [{
+                    label: 'CUDA (FPS)',
+                    data: [120, 85, 60, 42],
+                    borderColor: '#10b981',
+                    tension: 0.3,
+                    fill: false
+                }, {
+                    label: 'CPU (FPS)',
+                    data: [15, 8, 3, 1],
+                    borderColor: '#94a3b8',
+                    borderDash: [5, 5],
+                    tension: 0.3,
+                    fill: false
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'FPS' } } }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initCharts);
+    window.addEventListener('hashchange', () => {
+        const hash = window.location.hash.replace('#', '') || 'summary';
+        showSection(hash);
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+        const hash = window.location.hash.replace('#', '');
+        if (hash) showSection(hash);
+    });
+</script>
+
+</body>
+</html>

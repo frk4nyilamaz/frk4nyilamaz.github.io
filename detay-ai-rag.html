@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Chatbot | Furkan Yılmaz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="assets/common.css">
+</head>
+<body class="antialiased">
+
+<header class="detail-topbar">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="index.html#ai-rag" class="back-link">
+            <span aria-hidden="true">←</span> Ana Sayfaya Dön
+        </a>
+        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">HITL RAG Chatbot</span>
+    </div>
+</header>
+
+<div class="max-w-6xl mx-auto px-4 py-12">
+    <header class="mb-16 border-b pb-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+            <div>
+                <span class="font-bold tracking-widest uppercase text-sm" style="color: var(--brand-accent);">Bitirme Projesi</span>
+                <p class="text-sm text-slate-500 mt-1">Çoklu Mimarili RAG Chatbot</p>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mt-2">HITL RAG Chatbot</h1>
+                <p class="text-slate-500 mt-4 max-w-2xl text-lg">
+                    Karar veren model (Router) olarak kullanılan bir LLM ile RAG gerektiren ve gerektirmeyen (chitchat) soruların ayrıştırıldığı
+                    bir chatbot sistemi. Ollama, FastAPI ve ChromaDB kullanıldı.
+                </p>
+            </div>
+            <div class="flex gap-3">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center min-w-[120px]">
+                    <span class="block text-2xl font-bold" style="color: var(--brand-accent);">3</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold leading-tight block">Farklı LLM Modeli</span>
+                    <span class="text-[9px] text-slate-400 mt-1 block">DeepSeek, Qwen, Llama3 kullanıldı</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                    <span class="block text-2xl font-bold text-emerald-500">RAG</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold">ChromaDB</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+        <div class="lg:col-span-2 space-y-6">
+            <h3 class="text-2xl font-bold text-slate-800">Proje Özeti</h3>
+            <p class="text-slate-600 leading-relaxed">
+                Bu projenin temel amacı; film veritabanı üzerinde farklı LLM mimarilerinin performanslarını kıyaslamak ve kullanıcı geri bildirimleriyle kendi hatalarından öğrenen dinamik bir test platformu oluşturmaktır.
+                Her soruya aynı RAG pipeline'ını uygulamak yerine, basit selamlaşma soruları kural tabanlı yanıtlanır;
+                bilgi gerektiren sorular ise vektör araması ve LLM üretimine yönlendirilir.
+                Direct Turkish, Dual Sequential ve Generate + Translate mimarileri, modellerin hız ve performanslarını
+                test etmek ve kıyaslamak amacıyla oluşturulmuş bir test ortamı olarak kullanıldı.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-slate-900 text-slate-300 p-5 rounded-2xl">
+                    <h4 class="text-white font-bold text-sm mb-2 uppercase tracking-tight">Kullanılan Teknolojiler</h4>
+                    <ul class="text-xs space-y-2 mono">
+                        <li class="flex justify-between gap-2"><span>LLM Modelleri:</span> <span class="text-blue-400">DeepSeek, Qwen, Llama3 (Ollama)</span></li>
+                        <li class="flex justify-between gap-2"><span>Embedding &amp; Vector DB:</span> <span class="text-blue-400">Sentence Transformers, ChromaDB</span></li>
+                        <li class="flex justify-between gap-2"><span>Backend:</span> <span class="text-blue-400">FastAPI</span></li>
+                    </ul>
+                </div>
+                <div class="bg-blue-50 border border-blue-100 p-5 rounded-2xl">
+                    <h4 class="text-blue-800 font-bold text-sm mb-2 uppercase tracking-tight">Geri Bildirim Döngüsü</h4>
+                    <p class="text-xs text-blue-700 leading-relaxed">
+                        Düşük puanlı yanıtlar anahtar kelime eşleşmesi ile tespit edilip benzer sorularda modele uyarı olarak verilir.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+            <h4 class="font-bold text-slate-800 mb-4">Mimari Gecikme Karşılaştırması</h4>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="tradeoffChart"></canvas>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-4 italic text-center">
+                Test ortamında ölçülen ortalama yanıt süreleri (sn).
+            </p>
+        </div>
+    </div>
+
+    <section class="space-y-8 bg-slate-100 p-8 rounded-[2rem] border border-slate-200 mb-16">
+        <div class="text-center space-y-2">
+            <h3 class="text-2xl font-bold text-slate-800">Router ve Pipeline Seçimi</h3>
+            <p class="text-sm text-slate-500 italic">Soru tipine göre hangi pipeline'ın çalıştığını inceleyin.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button onclick="updateSimulator('chitchat')" class="architecture-node p-6 bg-white rounded-2xl text-left border-2 border-transparent active-mode" id="btn-chitchat">
+                <div class="text-2xl mb-2">💬</div>
+                <h4 class="font-bold text-slate-800">Chitchat</h4>
+                <p class="text-[11px] text-slate-500 mt-1">Kural tabanlı, LLM kullanılmaz.</p>
+            </button>
+            <button onclick="updateSimulator('direct')" class="architecture-node p-6 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-direct">
+                <div class="text-2xl mb-2">🇹🇷</div>
+                <h4 class="font-bold text-slate-800">Direct Turkish</h4>
+                <p class="text-[11px] text-slate-500 mt-1">Doğrudan Türkçe RAG üretimi.</p>
+            </button>
+            <button onclick="updateSimulator('hybrid')" class="architecture-node p-6 bg-white rounded-2xl text-left border-2 border-transparent" id="btn-hybrid">
+                <div class="text-2xl mb-2">🔄</div>
+                <h4 class="font-bold text-slate-800">Generate + Translate</h4>
+                <p class="text-[11px] text-slate-500 mt-1">İngilizce üretim + Türkçe çeviri.</p>
+            </button>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl shadow-inner border border-slate-200">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style="background-color: var(--brand-accent);">1</div>
+                        <div>
+                            <h5 class="font-bold text-slate-800 uppercase text-xs tracking-widest">Router Kararı</h5>
+                            <p id="router-text" class="text-sm text-slate-600">Chitchat — kural tabanlı yanıt</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold">2</div>
+                        <div>
+                            <h5 class="font-bold text-slate-800 uppercase text-xs tracking-widest">Pipeline</h5>
+                            <p id="pipeline-text" class="text-sm text-slate-600">Statik cevap havuzu</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold">3</div>
+                        <div>
+                            <h5 class="font-bold text-slate-800 uppercase text-xs tracking-widest">Yanıt Süresi</h5>
+                            <div class="flex items-center gap-3">
+                                <div class="h-2 bg-slate-100 rounded-full flex-1 max-w-[200px]">
+                                    <div id="latency-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-1000" style="width: 2%"></div>
+                                </div>
+                                <span id="latency-val" class="text-sm font-bold text-slate-700">0.005s</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-2xl border border-dashed border-slate-300">
+                    <h5 class="font-bold text-slate-400 uppercase text-[10px] mb-4 tracking-widest">Log</h5>
+                    <div id="log-output" class="mono text-[11px] space-y-1 text-slate-600">
+                        [INFO] Chitchat pattern matched<br>
+                        [DEBUG] LLM atlanıyor<br>
+                        [OK] Yanıt: 0.005s
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div class="space-y-4">
+            <h3 class="text-2xl font-bold text-slate-800">Geri Bildirim Mekanizması</h3>
+            <p class="text-slate-600 text-sm">
+                Kullanıcı bir yanıtı düşük puanladığında bu kayıt veritabanına yazılır.
+                Yeni bir soru geldiğinde anahtar kelime eşleşmesi ile önceki düşük puanlı sorularla karşılaştırılır.
+                Eşleşme bulunursa modele "bu konuda daha önce hatalı yanıt verdin" şeklinde bir uyarı prompt'a eklenir.
+            </p>
+            <div class="space-y-2">
+                <div class="p-4 bg-white rounded-xl border border-slate-200 flex items-center gap-4">
+                    <span class="text-xl">🔍</span>
+                    <div class="text-xs">
+                        <span class="font-bold block text-slate-700">Anahtar Kelime Eşleşmesi</span>
+                        <p class="text-slate-500">Mevcut soru ile geçmiş düşük puanlı sorular arasındaki kelime benzerliği.</p>
+                    </div>
+                </div>
+                <div class="p-4 bg-white rounded-xl border border-slate-200 flex items-center gap-4">
+                    <span class="text-xl">📝</span>
+                    <div class="text-xs">
+                        <span class="font-bold block text-slate-700">Prompt Enjeksiyonu</span>
+                        <p class="text-slate-500">Benzer sorularda modele önceki hata uyarısı eklenir.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="glass-card p-8 rounded-3xl flex flex-col justify-center space-y-4">
+            <h4 class="font-bold text-slate-800">Yerel Çalışma &amp; Mimari Kararlar</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Tüm modeller harici bulut API'lerine ihtiyaç duymadan <b>Ollama</b> üzerinden doğrudan yerel donanımda çalıştırıldı.
+                Bu sayede veri gizliliği korunurken farklı Türkçe/İngilizce üretim stratejilerinin gecikme-kalite dengesi izole ortamda ölçüldü.
+            </p>
+            <div class="grid grid-cols-3 gap-3 pt-2 text-center">
+                <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                    <span class="block text-lg font-bold text-blue-600">42 sn</span>
+                    <span class="text-[10px] text-slate-500 font-semibold">Direct TR</span>
+                </div>
+                <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                    <span class="block text-lg font-bold text-indigo-600">65 sn</span>
+                    <span class="text-[10px] text-slate-500 font-semibold">Dual Seq.</span>
+                </div>
+                <div class="bg-purple-50 p-3 rounded-xl border border-purple-100">
+                    <span class="block text-lg font-bold text-purple-600">92 sn</span>
+                    <span class="text-[10px] text-slate-500 font-semibold">Gen+Translate</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center pt-8 border-t border-slate-200">
+        <p class="text-slate-400 text-sm italic mb-4">Diğer projelerimi incelemek için ana menüye dönebilirsiniz.</p>
+        <a href="index.html" class="inline-block bg-slate-900 text-white px-8 py-3 rounded-full font-bold hover:bg-slate-800 transition-all text-sm">
+            Tüm Portfolyoyu Görüntüle
+        </a>
+    </footer>
+</div>
+
+<script>
+    const modes = {
+        chitchat: {
+            router: 'Chitchat — kural tabanlı yanıt',
+            pipeline: 'Regex eşleşmesi, statik cevap havuzu',
+            latency: '0.005s',
+            width: '2%',
+            logs: [
+                '[INFO] Chitchat pattern matched',
+                '[DEBUG] LLM atlanıyor',
+                '[OK] Yanıt: 0.005s'
+            ]
+        },
+        direct: {
+            router: 'Direct Turkish RAG',
+            pipeline: 'Embedding → Vector Search → Türkçe LLM üretim',
+            latency: '42.5s',
+            width: '45%',
+            logs: [
+                '[INFO] RAG pipeline seçildi',
+                '[DEBUG] 3 ilgili pasaj bulundu',
+                '[OK] Direct Turkish yanıt: 42.5s'
+            ]
+        },
+        hybrid: {
+            router: 'Generate + Translate',
+            pipeline: 'Vector Search → İngilizce üretim → Türkçe çeviri',
+            latency: '92.1s',
+            width: '95%',
+            logs: [
+                '[INFO] Generate + Translate seçildi',
+                '[DEBUG] İngilizce reasoning tamamlandı',
+                '[OK] Çeviri sonrası yanıt: 92.1s'
+            ]
+        }
+    };
+
+    function updateSimulator(modeId) {
+        const mode = modes[modeId];
+        document.getElementById('router-text').innerText = mode.router;
+        document.getElementById('pipeline-text').innerText = mode.pipeline;
+        document.getElementById('latency-val').innerText = mode.latency;
+        document.getElementById('latency-bar').style.width = mode.width;
+        document.getElementById('log-output').innerHTML = mode.logs.join('<br>');
+        document.querySelectorAll('.architecture-node').forEach(btn => btn.classList.remove('active-mode', 'glow-blue'));
+        document.getElementById('btn-' + modeId).classList.add('active-mode', 'glow-blue');
+    }
+
+    function initCharts() {
+        new Chart(document.getElementById('tradeoffChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Direct TR', 'Dual Seq.', 'Gen+Translate'],
+                datasets: [{
+                    label: 'Ortalama Süre (sn)',
+                    data: [42, 65, 92],
+                    backgroundColor: ['#3b82f6', '#6366f1', '#4f46e5'],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'Saniye' } } }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initCharts);
+</script>
+
+</body>
+</html>

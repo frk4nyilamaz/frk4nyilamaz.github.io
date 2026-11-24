@@ -1,0 +1,205 @@
+/* ============================================================
+   ORTAK STİL KATMANI
+   Bu dosya tüm portfolyo sayfaları (index + detay sayfaları)
+   tarafından paylaşılır. Renkler, tipografi ve tekrar eden
+   bileşen stilleri burada tek yerden yönetilir.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --bg-primary: #f8fafc;
+    --brand-primary: #1e293b;
+    --brand-accent: #3b82f6;
+    --success: #10b981;
+    --warning: #f59e0b;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-primary);
+    color: #1e293b;
+    scroll-behavior: smooth;
+}
+
+.terminal-bg {
+    background: #0f172a;
+    color: #94a3b8;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 350px;
+    max-height: 400px;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.nav-link.active {
+    border-left: 4px solid var(--brand-accent);
+    background-color: #eff6ff;
+    color: var(--brand-accent);
+}
+
+.step-node {
+    width: 12px;
+    height: 12px;
+    background-color: #3b82f6;
+    border-radius: 50%;
+    position: relative;
+    z-index: 10;
+}
+
+.step-line {
+    position: absolute;
+    left: 5px;
+    top: 12px;
+    width: 2px;
+    height: 100%;
+    background-color: #e2e8f0;
+}
+
+/* ----- Detay sayfaları için üst bar (sidebar'ın yerini alır) ----- */
+.detail-topbar {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    transition: color 0.15s ease;
+}
+
+.back-link:hover {
+    color: var(--brand-accent);
+}
+
+/* ----- RAG simülatör sayfasındaki interaktif öğeler ----- */
+.architecture-node {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.architecture-node:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.active-mode {
+    border: 2px solid var(--brand-accent);
+    background-color: #eff6ff;
+}
+
+.glow-blue { box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+
+/* ----- K8s cluster topoloji şeması ----- */
+.k8s-topology .k8s-node {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+}
+
+.k8s-topology .k8s-node-lb {
+    border: 2px solid #22d3ee;
+    background: rgba(236, 254, 255, 0.6);
+}
+
+.k8s-topology .k8s-node-master {
+    border-color: #93c5fd;
+    background: rgba(239, 246, 255, 0.7);
+}
+
+.k8s-topology .k8s-node-worker {
+    border-color: #6ee7b7;
+    background: rgba(236, 253, 245, 0.7);
+}
+
+.k8s-topology .k8s-connector {
+    width: 2px;
+    height: 1rem;
+    background: #cbd5e1;
+    margin: 0 auto;
+}
+
+.k8s-topology .k8s-connector-bar {
+    height: 2px;
+    background: #cbd5e1;
+    max-width: 28rem;
+    margin: 0 auto;
+    position: relative;
+}
+
+.k8s-topology .k8s-connector-bar::before,
+.k8s-topology .k8s-connector-bar::after {
+    content: '';
+    position: absolute;
+    top: -0.75rem;
+    width: 2px;
+    height: 0.75rem;
+    background: #cbd5e1;
+}
+
+.k8s-topology .k8s-connector-bar::before { left: 0; }
+.k8s-topology .k8s-connector-bar::after { right: 0; }
+
+/* ----- İskelet/placeholder detay sayfaları için ----- */
+.placeholder-badge {
+    background: repeating-linear-gradient(
+        45deg,
+        #fef3c7,
+        #fef3c7 10px,
+        #fde68a 10px,
+        #fde68a 20px
+    );
+}
+
+/* ----- Baskı / PDF Çıktısı Düzenlemeleri ----- */
+@media print {
+    body {
+        background-color: #ffffff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .detail-topbar,
+    footer,
+    aside,
+    .back-link {
+        display: none !important;
+    }
+
+    main {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+
+    .glass-card,
+    .terminal-bg,
+    .k8s-topology,
+    section,
+    table,
+    .bg-slate-900 {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
